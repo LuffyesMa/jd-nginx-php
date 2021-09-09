@@ -228,6 +228,7 @@ else
   cat >"$WEB_ROOT_PATH/config.php" <<EOF
 <?php
 define('CONFIG_PATH', '/jd/config/config.sh');// config.sh文件路径
+define('TMP_CONFIG_PATH', '/jd/config/tmpConfig.sh'); // 临时config.sh文件路径
 define('DD_TOKEN', '${DD_ACCCESS_TOKEN}');// 钉钉webhook access-token
 define('DD_SECRET', '${DD_SECRET}');// 钉钉webhook secret
 define('WX_CORPID', '${WX_CORPID}');// 企业微信id
