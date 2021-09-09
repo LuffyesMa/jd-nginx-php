@@ -74,6 +74,7 @@ docker_install() {
 
 docker_install
 warn "注意如果你什么都不清楚，建议所有选项都直接回车，使用默认选择！！！"
+warn "有疑问+q: 517093030"
 #配置文件目录
 echo -n -e "\e[33m一.请输入配置文件保存的绝对路径,直接回车为当前目录:\e[0m"
 read -r jd_path
@@ -283,5 +284,6 @@ docker ps
 log "5.安装已经完成。\n现在你可以访问设备的 ip:5678 用户名：admin  密码：shuye72  来添加cookie，和其他操作。感谢使用！"
 log "6.企业微信服务端回调URL: http://${HOST_URL}/reciveMsg.php,请前去https://work.weixin.qq.com/wework_admin/frame#apps填写验证"
 log "7.上传cookie地址为：http://${HOST_URL}/index.php,首次安装完成请先打开一下这个地址,首次打开会把以上所有参数写入config.sh"
+warn "有疑问+q: 517093030"
 chmod -R 777 "$JD_PATH"
 git config --global core.fileMode false
