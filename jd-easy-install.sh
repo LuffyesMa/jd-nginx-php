@@ -11,8 +11,8 @@ echo "
 "
 
 if ! [ -x "$(command -v git)" ]; then
-  echo 'Error: git is not installed.' >&2
-  exit 1
+    echo 'Error: git is not installed.' >&2
+    exit 1
 fi
 DOCKER_IMG_NAME="martin888/jd-nginx-php"
 JD_PATH=""
@@ -33,43 +33,43 @@ INSTALL_WATCH=false
 #TEST_BEAN_CHAGE=false
 
 log() {
-  echo -e "\e[32m$1 \e[0m\n"
+    echo -e "\e[32m$1 \e[0m\n"
 }
 
 inp() {
-  echo -e "\e[33m$1 \e[0m\n"
+    echo -e "\e[33m$1 \e[0m\n"
 }
 
 warn() {
-  echo -e "\e[31m$1 \e[0m\n"
+    echo -e "\e[31m$1 \e[0m\n"
 }
 
 cancelrun() {
-  if [ $# -gt 0 ]; then
-    echo "\033[31m $1 \033[0m"
-  fi
-  exit 1
+    if [ $# -gt 0 ]; then
+        echo "\033[31m $1 \033[0m"
+    fi
+    exit 1
 }
 
 docker_install() {
-  echo "检查Docker......"
-  if [ -x "$(command -v docker)" ]; then
-    echo "检查到Docker已安装!"
-  else
-    if [ -r /etc/os-release ]; then
-      lsb_dist="$(. /etc/os-release && echo "$ID")"
-    fi
-    if [ "$lsb_dist" == "openwrt" ]; then
-      echo "openwrt 环境请自行安装docker"
-      #exit 1
+    echo "检查Docker......"
+    if [ -x "$(command -v docker)" ]; then
+        echo "检查到Docker已安装!"
     else
-      echo "安装docker环境..."
-      curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
-      echo "安装docker环境...安装完成!"
-      systemctl enable docker
-      systemctl start docker
+        if [ -r /etc/os-release ]; then
+            lsb_dist="$(. /etc/os-release && echo "$ID")"
+        fi
+        if [ "$lsb_dist" == "openwrt" ]; then
+            echo "openwrt 环境请自行安装docker"
+            #exit 1
+        else
+            echo "安装docker环境..."
+            curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+            echo "安装docker环境...安装完成!"
+            systemctl enable docker
+            systemctl start docker
+        fi
     fi
-  fi
 }
 
 docker_install
@@ -80,7 +80,7 @@ echo -n -e "\e[33m一.请输入配置文件保存的绝对路径,直接回车为
 read -r jd_path
 JD_PATH=$jd_path
 if [ -z "$jd_path" ]; then
-  JD_PATH=$SHELL_FOLDER
+    JD_PATH=$SHELL_FOLDER
 fi
 CONFIG_PATH=$JD_PATH/jd/config
 SCRIPTS_PATH=$JD_PATH/jd/scripts
@@ -92,112 +92,108 @@ echo -n -e "\e[33m请先去本网页获取应用服务端Token和aes-key\e[0m\n"
 echo -n -e "\e[33m请输入访问域名或本机外网ip,内网机器请手动配置端口转发到本机5679端口,填写示例：api.xx.com:5679:\e[0m"
 read -r HOST_URL
 if [ -z "$HOST_URL" ]; then
-  warn "参数错误"
+    warn "参数错误"
 else
-  log "HOST_URL: $HOST_URL"
+    log "HOST_URL: $HOST_URL"
 fi
+#检测config文件
+logConfig() {
+    log "CorpId: $WX_CORPID"
+    log "CorpSecret: $WX_CORPSECRET"
+    log "AgentId: $WX_AGENT_ID"
+    log "ThumbMediaId: $WX_THUMB_MEDIA_ID"
+    log "ServerToken: $WX_SERVER_TOKEN"
+    log "AesKey: $WX_SERVER_AES_KEY"
+    log "YOU_WX_USER_ID: $YOU_WX_USER_ID"
+    log "DDAccessToken: $DD_ACCCESS_TOKEN"
+    log "DDSecret: $DD_SECRET"
+}
 
 warn "请提前申请钉钉通知和企业微信应用通知，配置相关参数！！！"
 #配置文件目录
 
-
-echo -n -e "\e[33m请输入企业微信CorpId:\e[0m"
-read -r WX_CORPID
-if [ -z "$WX_CORPID" ]; then
-  warn "参数错误"
-else
-  log "CorpId: $WX_CORPID"
+if [[ -f $1 ]]; then
+    echo "检测到config参数，开始读取config配置文件..."
+    source $1
+    logConfig
+elif [[ -f ./php_config ]]];then
+    echo "检测到config参数，开始读取config配置文件..."
+    source ./php_config
+    logConfig
 fi
 
-echo -n -e "\e[33m请输入企业微信CorpSecret:\e[0m"
-read -r WX_CORPSECRET
-if [ -z "$WX_CORPSECRET" ]; then
-  warn "参数错误"
-else
-  log "WX_CORPSECRET: $WX_CORPSECRET"
+if [[ -z $WX_CORPID ]]; then
+    read -p "请输入企业微信CorpId: " WX_CORPID
+    log "CorpId: $WX_CORPID"
 fi
 
-echo -n -e "\e[33m请输入企业微信应用AgentId:\e[0m"
-read -r WX_AGENT_ID
-if [ -z "$WX_AGENT_ID" ]; then
-  warn "参数错误"
-else
-  log "WX_AGENT_ID: $WX_AGENT_ID"
+if [[ -z $WX_CORPID ]]; then
+    read -p "请输入企业微信CorpSecret: " WX_CORPSECRET
+    log "CorpSecret: $WX_CORPSECRET"
 fi
 
-echo -n -e "\e[33m请输入企业微信ThumbMediaId:\e[0m"
-read -r WX_THUMB_MEDIA_ID
-if [ -z "$WX_THUMB_MEDIA_ID" ]; then
-  warn "参数错误"
-else
-  log "WX_THUMB_MEDIA_ID: $WX_THUMB_MEDIA_ID"
+if [[ -z $WX_AGENT_ID ]]; then
+    read -p "请输入企业微信应用AgentId: " WX_AGENT_ID
+    log "AgentId: $WX_AGENT_ID"
 fi
 
-echo -n -e "\e[33m请输入企业微信服务端Token:\e[0m"
-read -r WX_SERVER_TOKEN
-if [ -z "$WX_SERVER_TOKEN" ]; then
-  warn "参数错误"
-else
-  log "WX_SERVER_TOKEN: $WX_SERVER_TOKEN"
+if [[ -z $WX_THUMB_MEDIA_ID ]]; then
+    read -p "请输入企业微信ThumbMediaId: " WX_THUMB_MEDIA_ID
+    log "ThumbMediaId: $WX_THUMB_MEDIA_ID"
 fi
 
-echo -n -e "\e[33m请输入企业微信服务端AesKey:\e[0m"
-read -r WX_SERVER_AES_KEY
-if [ -z "$WX_SERVER_AES_KEY" ]; then
-  warn "参数错误"
-else
-  log "WX_SERVER_AES_KEY: $WX_SERVER_AES_KEY"
+if [[ -z $WX_SERVER_TOKEN ]]; then
+    read -p "请输入企业微信服务端Token: " WX_SERVER_TOKEN
+    log "ServerToken: $WX_SERVER_TOKEN"
 fi
-echo -n -e "\e[33m请输入你自己的企业微信用户ID,企业后台用户详情里面账号就是用户ID:\e[0m"
-read -r YOU_WX_USER_ID
-if [ -z "$YOU_WX_USER_ID" ]; then
-  warn "参数错误"
-else
-  log "YOU_WX_USER_ID: $YOU_WX_USER_ID"
+if [[ -z $WX_SERVER_AES_KEY ]]; then
+    read -p "请输入企业微信服务端AesKey: " WX_SERVER_AES_KEY
+    log "AesKey: $WX_SERVER_AES_KEY"
 fi
 
-echo -n -e "\e[33m请输入钉钉AccessToken（可选）:\e[0m"
-read -r DD_ACCCESS_TOKEN
-if [ -z "$DD_ACCCESS_TOKEN" ]; then
-  log "未输入钉钉AccessToken"
-else
-  log "DD_ACCCESS_TOKEN: $DD_ACCCESS_TOKEN"
+if [[ -z $YOU_WX_USER_ID ]]; then
+    read -p "请输入你自己的企业微信用户ID,企业后台用户详情里面账号就是用户ID: " YOU_WX_USER_ID
+    log "YOU_WX_USER_ID: $YOU_WX_USER_ID"
 fi
 
-echo -n -e "\e[33m请输入钉钉Secret（可选）:\e[0m"
-read -r DD_SECRET
-if [ -z "$DD_SECRET" ]; then
-  log "未输入钉钉Secret"
-else
-  log "DD_SECRET: $DD_SECRET"
+if [[ -z $DD_ACCCESS_TOKEN ]]; then
+    read -p "请输入钉钉AccessToken（可选）: " DD_ACCCESS_TOKEN
+    log "DDAccessToken: $DD_ACCCESS_TOKEN"
 fi
+
+if [[ -z $DD_SECRET ]]; then
+    read -p "请输入钉钉Secret（可选）: " DD_SECRET
+    log "DDSecret: $DD_SECRET"
+fi
+
+
 
 #检测容器是否存在
 check_container_name() {
-  # shellcheck disable=SC2143
-  if [ -n "$(docker ps -a | grep $CONTAINER_NAME 2>/dev/null)" ]; then
-    HAS_CONTAINER=true
-    inp "检测到先前已经存在的容器，是否删除先前的容器：\n1) 是[默认]\n2) 不要"
-    echo -n -e "\e[33m输入您的选择->\e[0m"
-    read -r update
-    if [ "$update" = "2" ]; then
-      PULL_IMAGE=false
-      inp "您选择了不要删除之前的容器，需要重新输入容器名称"
-      input_container_name
+    # shellcheck disable=SC2143
+    if [ -n "$(docker ps -a | grep $CONTAINER_NAME 2>/dev/null)" ]; then
+        HAS_CONTAINER=true
+        inp "检测到先前已经存在的容器，是否删除先前的容器：\n1) 是[默认]\n2) 不要"
+        echo -n -e "\e[33m输入您的选择->\e[0m"
+        read -r update
+        if [ "$update" = "2" ]; then
+            PULL_IMAGE=false
+            inp "您选择了不要删除之前的容器，需要重新输入容器名称"
+            input_container_name
+        fi
     fi
-  fi
 }
 
 #容器名称
 input_container_name() {
-  echo -n -e "\e[33m三.请输入要创建的Docker容器名称[默认为：jd-base-nginx-php]->\e[0m"
-  read -r container_name
-  if [ -z "$container_name" ]; then
-    CONTAINER_NAME="jd-base-nginx-php"
-  else
-    CONTAINER_NAME=$container_name
-  fi
-  check_container_name
+    echo -n -e "\e[33m三.请输入要创建的Docker容器名称[默认为：jd-base-nginx-php]->\e[0m"
+    read -r container_name
+    if [ -z "$container_name" ]; then
+        CONTAINER_NAME="jd-base-nginx-php"
+    else
+        CONTAINER_NAME=$container_name
+    fi
+    check_container_name
 }
 input_container_name
 
@@ -208,24 +204,24 @@ mkdir -p "$CONFIG_PATH"
 mkdir -p "$LOG_PATH"
 
 if [ $HAS_IMAGE = true ] && [ $PULL_IMAGE = true ]; then
-  log "2.1.开始拉取最新的镜像"
-  docker pull $DOCKER_IMG_NAME:$TAG
+    log "2.1.开始拉取最新的镜像"
+    docker pull $DOCKER_IMG_NAME:$TAG
 fi
 
 if [ $HAS_CONTAINER = true ] && [ $DEL_CONTAINER = true ]; then
-  log "2.2.删除先前的容器"
-  docker stop "$CONTAINER_NAME" >/dev/null
-  docker rm "$CONTAINER_NAME" >/dev/null
+    log "2.2.删除先前的容器"
+    docker stop "$CONTAINER_NAME" >/dev/null
+    docker rm "$CONTAINER_NAME" >/dev/null
 fi
 
 if [ -z "$PHP_CODE_URL" ]; then
-  log "2.3.未填写PHP代码仓库地址，不拉取"
+    log "2.3.未填写PHP代码仓库地址，不拉取"
 else
-  log "2.3.开始拉取仓库PHP代码，$PHP_CODE_URL"
-  git clone $PHP_CODE_URL "$WEB_ROOT_PATH"
-  touch "$WEB_ROOT_PATH"/JDAccount.json
-  log "2.3.1.正在生成config.php文件"
-  cat >"$WEB_ROOT_PATH/config.php" <<EOF
+    log "2.3.开始拉取仓库PHP代码，$PHP_CODE_URL"
+    git clone $PHP_CODE_URL "$WEB_ROOT_PATH"
+    touch "$WEB_ROOT_PATH"/JDAccount.json
+    log "2.3.1.正在生成config.php文件"
+    cat >"$WEB_ROOT_PATH/config.php" <<EOF
 <?php
 define('CONFIG_PATH', '/jd/config/config.sh');// config.sh文件路径
 define('TMP_CONFIG_PATH', '/jd/config/tmpConfig.sh'); // 临时config.sh文件路径
@@ -239,36 +235,52 @@ define('WX_SERVER_TOKEN','${WX_SERVER_TOKEN}'); //企业微信服务端token
 define('WX_SERVER_AES_KEY','${WX_SERVER_AES_KEY}'); //企业微信服务端aes-key
 define('YOU_WX_USER_ID','${YOU_WX_USER_ID}'); //你自己的企业微信用户id
 EOF
+
+  log "2.3.2.正在生成php_config文件"
+  cat >"./php_config" <<EOF
+DD_TOKEN=${DD_ACCCESS_TOKEN}
+DD_SECRET=${DD_SECRET}
+WX_CORPID=${WX_CORPID}
+WX_CORPSECRET=${WX_CORPSECRET}
+WX_THUMB_MEDIA_ID=${WX_THUMB_MEDIA_ID}
+WX_AGENT_ID=${WX_AGENT_ID}
+WX_SERVER_TOKEN=${WX_SERVER_TOKEN}
+WX_SERVER_AES_KEY=${WX_SERVER_AES_KEY}
+YOU_WX_USER_ID=${YOU_WX_USER_ID}
+EOF
+
 fi
+
+
 
 log "3.开始创建容器并执行,若出现Unable to find image请耐心等待"
 docker run -dit \
-  -v "$CONFIG_PATH":/jd/config \
-  -v "$LOG_PATH":/jd/log \
-  -v "$SCRIPTS_PATH":/jd/scripts \
-  -v "$WEB_ROOT_PATH":/usr/share/nginx/html \
-  -p 5678:5678 \
-  -p 5679:80 \
-  --name "$CONTAINER_NAME" \
-  --hostname jd-nginx \
-  -e ENABLE_HANGUP=true \
-  -e ENABLE_WEB_PANEL=true \
-  --restart always \
-  "$DOCKER_IMG_NAME":"$TAG"
+    -v "$CONFIG_PATH":/jd/config \
+    -v "$LOG_PATH":/jd/log \
+    -v "$SCRIPTS_PATH":/jd/scripts \
+    -v "$WEB_ROOT_PATH":/usr/share/nginx/html \
+    -p 5678:5678 \
+    -p 5679:80 \
+    --name "$CONTAINER_NAME" \
+    --hostname jd-nginx \
+    -e ENABLE_HANGUP=true \
+    -e ENABLE_WEB_PANEL=true \
+    --restart always \
+    "$DOCKER_IMG_NAME":"$TAG"
 
 if [ $INSTALL_WATCH = true ]; then
-  log "3.1.开始创建容器并执行"
-  docker run -d \
-    --name watchtower \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    containrrr/watchtower
+    log "3.1.开始创建容器并执行"
+    docker run -d \
+        --name watchtower \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        containrrr/watchtower
 fi
 
 #检查config文件是否存在
 
 if [ ! -f "$CONFIG_PATH/config.sh" ]; then
-  docker cp "$CONTAINER_NAME":/jd/sample/config.sh.sample "$CONFIG_PATH"/config.sh
-  #添加脚本作者助力码
+    docker cp "$CONTAINER_NAME":/jd/sample/config.sh.sample "$CONFIG_PATH"/config.sh
+    #添加脚本作者助力码
 #    sed -i 's/ForOtherFruit1=""/ForOtherFruit1=""/g' "$CONFIG_PATH"/config.sh
 #    sed -i 's/ForOtherBean1=""/ForOtherBean1=""/g' "$CONFIG_PATH"/config.sh
 #    sed -i 's/ForOtherJdFactory1=""/ForOtherJdFactory1=""/g' "$CONFIG_PATH"/config.sh
