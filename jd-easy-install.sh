@@ -117,7 +117,7 @@ if [[ -f $1 ]]; then
     echo "检测到config参数，开始读取config配置文件..."
     source $1
     logConfig
-elif [[ -f ./php_config ]]];then
+elif [[ -f ./php_config ]];then
     echo "检测到config参数，开始读取config配置文件..."
     source ./php_config
     logConfig
