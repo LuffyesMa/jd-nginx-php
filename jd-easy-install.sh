@@ -21,7 +21,7 @@ SHELL_FOLDER=$(pwd)
 CONTAINER_NAME="jd-base-nginx-php"
 CONFIG_PATH=""
 LOG_PATH=""
-TAG="0915"
+TAG="1015"
 PHP_CODE_URL="https://gitee.com/ioser_net/jd_php_script.git"
 
 HAS_IMAGE=false
