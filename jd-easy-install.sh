@@ -123,6 +123,11 @@ elif [[ -f ./php_config ]];then
     logConfig
 fi
 
+if [[ -z $PANEL_PORT ]]; then
+    read -p "请输入面板端口: " PANEL_PORT
+    log "面板端口: $PANEL_PORT"
+fi
+
 if [[ -z $WX_CORPID ]]; then
     read -p "请输入企业微信CorpId: " WX_CORPID
     log "CorpId: $WX_CORPID"
@@ -166,6 +171,7 @@ if [[ -z $DD_SECRET ]]; then
     read -p "请输入钉钉Secret（可选）: " DD_SECRET
     log "DDSecret: $DD_SECRET"
 fi
+
 
 
 
@@ -260,7 +266,7 @@ docker run -dit \
     -v "$LOG_PATH":/jd/log \
     -v "$SCRIPTS_PATH":/jd/scripts \
     -v "$WEB_ROOT_PATH":/usr/share/nginx/html \
-    -p 5678:5678 \
+    -p $PANEL_PORT:5678 \
     -p 5679:80 \
     --name "$CONTAINER_NAME" \
     --hostname jd-nginx \
@@ -281,15 +287,7 @@ fi
 
 if [ ! -f "$CONFIG_PATH/config.sh" ]; then
     docker cp "$CONTAINER_NAME":/jd/sample/config.sh.sample "$CONFIG_PATH"/config.sh
-    #添加脚本作者助力码
-#    sed -i 's/ForOtherFruit1=""/ForOtherFruit1=""/g' "$CONFIG_PATH"/config.sh
-#    sed -i 's/ForOtherBean1=""/ForOtherBean1=""/g' "$CONFIG_PATH"/config.sh
-#    sed -i 's/ForOtherJdFactory1=""/ForOtherJdFactory1=""/g' "$CONFIG_PATH"/config.sh
-#    sed -i 's/ForOtherJdzz1=""/ForOtherJdzz1=""/g' "$CONFIG_PATH"/config.sh
-#    sed -i 's/ForOtherJoy1=""/ForOtherJoy1=""/g' "$CONFIG_PATH"/config.sh                   #crazyJoy
-#    sed -i 's/ForOtherSgmh1=""/ForOtherSgmh1=""/g' "$CONFIG_PATH"/config.sh                 #闪购盲盒
-#    sed -i 's/ForOtherDreamFactory1=""/ForOtherDreamFactory1=""/g' "$CONFIG_PATH"/config.sh #京喜工厂
-#    sed -i 's/ForOtherPet1=""/ForOtherPet1=""/g' "$CONFIG_PATH"/config.sh                   #东东萌宠
+
 fi
 
 log "4.下面列出所有容器"
