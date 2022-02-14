@@ -133,10 +133,11 @@ if [[ -z $WX_CORPID ]]; then
     log "CorpId: $WX_CORPID"
 fi
 
-if [[ -z $WX_CORPID ]]; then
+if [[ -z $WX_CORPSECRET ]]; then
     read -p "请输入企业微信CorpSecret: " WX_CORPSECRET
     log "CorpSecret: $WX_CORPSECRET"
 fi
+
 
 if [[ -z $WX_AGENT_ID ]]; then
     read -p "请输入企业微信应用AgentId: " WX_AGENT_ID
