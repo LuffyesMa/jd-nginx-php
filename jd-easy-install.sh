@@ -201,7 +201,6 @@ input_container_name() {
     else
         CONTAINER_NAME=$container_name
     fi
-    check_container_name
 }
 input_container_name
 
