@@ -267,7 +267,7 @@ docker run -dit \
     -v "$SCRIPTS_PATH":/jd/scripts \
     -v "$WEB_ROOT_PATH":/usr/share/nginx/html \
     -p $PANEL_PORT:5678 \
-    -p 5679:80 \
+    -p 5689:80 \
     --name "$CONTAINER_NAME" \
     --hostname jd-nginx \
     -e ENABLE_HANGUP=true \
